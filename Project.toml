@@ -6,7 +6,6 @@ authors = [
     "williamfgc <williamfgc@yahoo.com>",
     "PhilipFackler <facklerpw@ornl.gov>"
 ]
->>>>>>> 8f76791e7856e38b3a8b71138a9b7d00f4e7bbdc
 
 [deps]
 Atomix = "a9b6321e-bd34-4604-b9c9-b65b8de01458"
