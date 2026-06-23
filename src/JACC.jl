@@ -27,6 +27,10 @@ export shared
 export LaunchSpec
 export synchronize
 
+public zeros, ones, fill
+public to_device, to_host, transfer!
+public @parallel_for, @parallel_reduce
+
 ilog2(n::T) where {T <: Integer} = sizeof(T) * 8 - 1 - leading_zeros(n)
 
 default_stream() = default_stream(default_backend())
@@ -108,7 +112,6 @@ end
         range::NTuple{N, AbstractRange}, x...) where {N}
     parallel_for(_RangesKernel{N}(), spec, length.(range), range, f, x...)
 end
-
 
 @inline function parallel_for(; range::TR, f, args::Tuple, kw...) where {TR}
     parallel_for(f, launch_spec(; kw...), range, args...)
@@ -237,7 +240,8 @@ end
 
 @inline function parallel_reduce(f, spec::LaunchSpec{TBackend},
         range::NTuple{N, AbstractRange}, x...; kw...) where {TBackend, N}
-    parallel_reduce(_RangesKernel{N}(), spec, length.(range), range, f, x...; kw...)
+    parallel_reduce(
+        _RangesKernel{N}(), spec, length.(range), range, f, x...; kw...)
 end
 
 @inline function parallel_reduce(; range::TR, f, args::Tuple,
