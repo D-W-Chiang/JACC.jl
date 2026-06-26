@@ -1160,7 +1160,9 @@ if JACC.backend != "amdgpu" && JACC.backend != "metal"
         r_old = JACC.Async.zeros(1, SIZE)
         r_aux = JACC.Async.zeros(1, SIZE)
         a1 = a1 * 4
+	CUDA.device!(1)
         r = r * 0.5
+	CUDA.device!(0)
         p = p * 0.5
         cond = 1.0
 

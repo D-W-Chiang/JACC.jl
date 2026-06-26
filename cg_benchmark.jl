@@ -14,7 +14,7 @@ function matvecmul(i, a1, a2, a3, x, y, SIZE)
 
 suite["cg"] = let 
 
-    SIZE = 10
+    SIZE = 100_000
     a0 = JACC.ones(SIZE)
     a1 = JACC.ones(SIZE)
     a2 = JACC.ones(SIZE)
@@ -64,7 +64,7 @@ suite["cg_async"] =
 
 let 
 
-    SIZE = 10
+    SIZE = 100_000
         a0 = JACC.Async.ones(1, SIZE)
         a1 = JACC.Async.ones(1, SIZE)
         a2 = JACC.Async.ones(1, SIZE)
@@ -76,7 +76,9 @@ let
         r_old = JACC.Async.zeros(1, SIZE)
         r_aux = JACC.Async.zeros(1, SIZE)
         a1 = a1 * 4
+	CUDA.device!(1)
         r = r * 0.5
+	CUDA.device!(0)
         p = p * 0.5
         cond = 1.0
 
@@ -112,5 +114,5 @@ let
 
         copyto!($p, $r_aux)
     end
-end samples = 1 evals = 1 gcsample = true setup = ($x .= 0.0; $r .= 0.5; $p .= 0.5; cond = 1.0)
+end samples = 1 evals = 1 gcsample = true setup = ($x .= 0.0; CUDA.device!(1); $r .= 0.5; $CUDA.device!(0); $p .= 0.5; cond = 1.0)
 end
