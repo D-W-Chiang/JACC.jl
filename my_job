@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#Run in specific nodes only
+#SBATCH --nodelist=hudson,milan
+
+#Hard runtime (HH:MM:SS)
+#SBATCH --time=0:10:00
+
+#SBATCH --job-name=cg_async
+
+#Run in the nvidia partition
+#SBATCH --partition=nvidia
+
+#Output file
+#SBATCH --output=cg_async_result-%j.out
+
+#Number of GPUs for the job
+#SBATCH --gpus=2
+#SBATCH --cpus-per-gpu=1
+
+#Change to directory where 'sbatch' was called
+cd $SLURM_SUBMIT_DIR
+
+#Run my program
+srun julia cg_benchmark.jl
