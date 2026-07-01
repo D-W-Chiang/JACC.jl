@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Run in specific nodes only
-#SBATCH --nodelist=hudson,milan
+#SBATCH --nodelist=hudson
 
 #Hard runtime (HH:MM:SS)
 #SBATCH --time=0:10:00
@@ -12,7 +12,7 @@
 #SBATCH --partition=nvidia
 
 #Output file
-#SBATCH --output=cg_async_result-%j.out
+#SBATCH --output=slurm_outputs/cg_async_result-%j.out
 
 #Number of GPUs for the job
 #SBATCH --gpus=2
@@ -20,6 +20,9 @@
 
 #Change to directory where 'sbatch' was called
 cd $SLURM_SUBMIT_DIR
+cd results
+mkdir job_$SLURM_JOB_ID
+cd job_$SLURM_JOB_ID
 
 #Run my program
-srun julia cg_benchmark.jl
+srun julia ~/JACC.jl/cg_async_benchmark.jl
