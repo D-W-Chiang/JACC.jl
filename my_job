@@ -6,13 +6,13 @@
 #Hard runtime (HH:MM:SS)
 #SBATCH --time=0:10:00
 
-#SBATCH --job-name=cg_async
+#SBATCH --job-name=cg
 
 #Run in the nvidia partition
 #SBATCH --partition=nvidia
 
 #Output file
-#SBATCH --output=slurm_outputs/cg_async_result-%j.out
+#SBATCH --output=slurm_outputs/cg/cg_result-%j.out
 
 #Number of GPUs for the job
 #SBATCH --gpus=2
@@ -25,4 +25,4 @@ mkdir job_$SLURM_JOB_ID
 cd job_$SLURM_JOB_ID
 
 #Run my program
-srun julia ~/JACC.jl/cg_async_benchmark.jl
+srun julia ~/JACC.jl/cg_benchmark.jl

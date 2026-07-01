@@ -7,7 +7,7 @@ using Statistics
 
 suite = BenchmarkGroup()
 
-SIZE = 1_000_000_000
+SIZE = 800_000_000
 
 function matvecmul(i, a1, a2, a3, x, y, SIZE)
         if i == 1
@@ -63,7 +63,7 @@ suite["cg"] = let
 	copyto!($p, $r_aux) #= used to be p = copy(r_aux) but 
         wrapping the loop in @benchmark changes the scope to be local =#
     end 
-end seconds = 300 samples = 100 evals = 1 gcsample = true setup = ($x .= 0.0; $r .= 0.5; $p .= 0.5; cond = 1.0)
+end seconds = 600 samples = 100 evals = 1 gcsample = true setup = ($x .= 0.0; $r .= 0.5; $p .= 0.5; cond = 1.0)
 end
 
 
