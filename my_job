@@ -25,4 +25,4 @@ mkdir job_$SLURM_JOB_ID
 cd job_$SLURM_JOB_ID
 
 #Run my program
-srun julia ~/JACC.jl/cg_benchmark.jl
+srun julia ~/JACC.jl/parallel_for_benchmark.jl

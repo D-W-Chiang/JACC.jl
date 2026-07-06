@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SIZE=100000
+
+async=$(julia -e "SIZE=$SIZE; include(\"async_parallel_reduce_benchmark.jl\")")
+non_async=$(julia -e "SIZE=$SIZE; include(\"parallel_reduce_benchmark.jl\")")
+
+#we want the difference to be less than 1e-03 seconds = 1e+06 nanoseconds
+while (( async - non_async >= 100000 || non_async - async >= 100000 )); do
+	SIZE=$((SIZE / 2))
+
+	async=$(julia -e "SIZE=$SIZE; include(\"async_parallel_for_benchmark.jl\")")
+	non_async=$(julia -e "SIZE=$SIZE; include(\"parallel_for_benchmark.jl\")")
+
+done
+
+echo "async time: $async"
+echo "non_async time: $non_async"
+echo "array size: $SIZE"
+
