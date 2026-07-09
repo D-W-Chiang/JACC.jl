@@ -105,7 +105,7 @@ function _parallel_for(indexer::TI, f, (m, n), (M, N), x...) where {TI}
     kernel, shmem_size = _kernel_maxshmem(_parallel_for_amdgpu_MN, kargs)
     config = AMDGPU.launch_configuration(kernel; shmem = shmem_size)
     maxThreadsX = sqrt(config.groupsize)
-    y_thr = max(floor(Int, (n / m) * maxThreadsX), 1)
+    y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, config.groupsize)
     x_thr = fld(config.groupsize, y_thr)
     threads = (x_thr, y_thr)
     blocks = (cld(m, x_thr), cld(n, y_thr))
@@ -137,7 +137,7 @@ function _parallel_for(indexer::TI, f, spec::LaunchSpec{AMDGPUBackend}, (m, n),
     if spec.threads == 0
         config = AMDGPU.launch_configuration(kernel; shmem = spec.shmem_size)
         maxThreadsX = sqrt(config.groupsize)
-        y_thr = max(floor(Int, (n / m) * maxThreadsX), 1)
+        y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, config.groupsize)
         x_thr = fld(config.groupsize, y_thr)
         spec.threads = (x_thr, y_thr)
     end

@@ -71,7 +71,7 @@ function _parallel_for(indexer::TI, f, (m, n), (M, N), x...) where {TI}
     kernel = @oneapi launch=false _parallel_for_oneapi_MN(indexer, (M, N), f, x...)
     maxThreads = div(oneAPI.launch_configuration(kernel), 2)
     maxThreadsX = sqrt(maxThreads)
-    y_thr = max(floor(Int, (n / m) * maxThreadsX), 1)
+    y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, maxThreads)
     x_thr = fld(maxThreads, y_thr)
     items = (x_thr, y_thr)
     groups = (cld(m, items[1]), cld(n, items[2]))
@@ -99,7 +99,7 @@ function _parallel_for(indexer::TI, f, spec::LaunchSpec{oneAPIBackend}, (m, n),
     if spec.threads == 0
         maxThreads = oneAPI.launch_configuration(kernel)
         maxThreadsX = sqrt(maxThreads)
-        y_thr = max(floor(Int, (n / m) * maxThreadsX), 1)
+        y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, maxThreads)
         x_thr = fld(maxThreads, y_thr)
         spec.threads = (x_thr, y_thr)
     end
