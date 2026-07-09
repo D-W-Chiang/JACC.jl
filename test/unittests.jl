@@ -571,6 +571,27 @@ end
     @test JACC.to_host(C)≈C_expected rtol=1e-5
 end
 
+@testset "Add-2D imbalanced" begin
+    function add!(i, j, A, B, C)
+        @inbounds C[i, j] = A[i, j] + B[i, j]
+    end
+
+    for (M, N) in ((1024, 16), (16, 1024))
+        C_expected = Float32(2.0) .* ones(Float32, M, N)
+
+        A = JACC.ones(Float32, M, N)
+        B = JACC.ones(Float32, M, N)
+
+        C = JACC.zeros(Float32, M, N)
+        JACC.parallel_for((M, N), add!, A, B, C)
+        @test JACC.to_host(C)≈C_expected rtol=1e-5
+
+        C_spec = JACC.zeros(Float32, M, N)
+        JACC.parallel_for(JACC.launch_spec(), (M, N), add!, A, B, C_spec)
+        @test JACC.to_host(C_spec)≈C_expected rtol=1e-5
+    end
+end
+
 @testset "Add-3D" begin
     function add!(i, j, k, A, B, C)
         @inbounds C[i, j, k] = A[i, j, k] + B[i, j, k]

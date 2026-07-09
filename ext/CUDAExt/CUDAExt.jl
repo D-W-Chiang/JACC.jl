@@ -100,7 +100,7 @@ function _parallel_for(indexer::TI, f, (m, n), (M, N), x...) where {TI}
     kernel, shmem_size = _kernel_maxshmem(_parallel_for_cuda_MN, kargs)
     config = CUDA.launch_configuration(kernel.fun; shmem = shmem_size)
     maxThreadsX = sqrt(config.threads)
-    y_thr = floor(Int, (n / m) * maxThreadsX)
+    y_thr = max(floor(Int, (n / m) * maxThreadsX), 1)
     x_thr = fld(config.threads, y_thr)
     threads = (x_thr, y_thr)
     blocks = (cld(m, x_thr), cld(n, y_thr))
@@ -133,7 +133,7 @@ function _parallel_for(indexer::TI, f, spec::LaunchSpec{CUDABackend}, (m, n),
     if spec.threads == 0
         config = CUDA.launch_configuration(kernel.fun; shmem = spec.shmem_size)
         maxThreadsX = sqrt(config.threads)
-        y_thr = floor(Int, (n / m) * maxThreadsX)
+        y_thr = max(floor(Int, (n / m) * maxThreadsX), 1)
         x_thr = fld(config.threads, y_thr)
         spec.threads = (x_thr, y_thr)
     end
