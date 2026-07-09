@@ -118,7 +118,7 @@ function JACC.parallel_for(
     dev = AMDGPU.device()
     props = AMDGPU.HIP.properties(dev)
     maxBlocks = (x = props.maxGridSize[1], y = props.maxGridSize[2])
-    if M < N && maxBlocks.x > maxBlocks.y
+    if M < N && maxBlocks.x >= maxBlocks.y
         _parallel_for(BlockIndexerSwapped(), f, (N, M), (M, N), x...)
     else
         _parallel_for(BlockIndexerBasic(), f, (M, N), (M, N), x...)
@@ -158,7 +158,7 @@ function JACC.parallel_for(
     dev = AMDGPU.device()
     props = AMDGPU.HIP.properties(dev)
     maxBlocks = (x = props.maxGridSize[1], y = props.maxGridSize[2])
-    if M < N && maxBlocks.x > maxBlocks.y
+    if M < N && maxBlocks.x >= maxBlocks.y
         _parallel_for(BlockIndexerSwapped(), f, spec, (N, M), (M, N), x...)
     else
         _parallel_for(BlockIndexerBasic(), f, spec, (M, N), (M, N), x...)
