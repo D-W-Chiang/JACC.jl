@@ -16,6 +16,7 @@ jobs:
     env:
       GH_JOBNAME: ${{matrix.jobname}}
       GH_OS: Linux
+      JULIA_DEPOT_PATH: $HOME/.julia-clark
     strategy:
       fail-fast: false
       matrix:
@@ -75,12 +76,6 @@ jobs:
         if: steps.check.outputs.triggered == 'true'
         run: |
           echo "$HOME/opt/julia-1.11.7/bin" >> $GITHUB_PATH
-
-      - name: Cache Julia
-        if: steps.check.outputs.triggered == 'true'
-        uses: julia-actions/cache@v3
-        with:
-          depot: $HOME/.julia-clark
 
       - name: Instantiate
         if: steps.check.outputs.triggered == 'true'
