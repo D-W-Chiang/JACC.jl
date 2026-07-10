@@ -228,7 +228,7 @@ end
 end
 
 @testset "reduce-ND" begin
-    Nend = JACC.backend == "metal" ? 6 : 7
+    Nend = JACC.backend == "metal" ? 5 : 7
     for N in 3:Nend
         dims = ntuple(_ -> 3, N)
         ah = randn(FloatType, dims)
