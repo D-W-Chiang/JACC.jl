@@ -16,7 +16,7 @@ jobs:
     env:
       GH_JOBNAME: ${{matrix.jobname}}
       GH_OS: Linux
-      JULIA_DEPOT_PATH: $HOME/.julia-clark
+      JULIA_DEPOT_PATH: /home/wfg/.julia-clark
     strategy:
       fail-fast: false
       matrix:
