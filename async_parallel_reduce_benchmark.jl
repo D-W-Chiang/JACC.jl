@@ -2,8 +2,6 @@ include("setup.jl")
 
 using BenchmarkTools
 
-SIZE = 10
-
 function matvecmul(i, a1, a2, a3, x, y, SIZE)
         if i == 1
             y[i] = a2[i] * x[i] + a1[i] * x[i + 1]
@@ -14,11 +12,13 @@ function matvecmul(i, a1, a2, a3, x, y, SIZE)
         end
 end
 
+devices = AMDGPU.devices()
+
 r  = JACC.Async.ones(1, SIZE)
 p  = JACC.Async.ones(2, SIZE)
 s1 = JACC.Async.zeros(2, SIZE)
 r  = r * 0.5
-CUDA.device!(1)
+AMDGPU.device!(devices[2])
 p  = p * 0.5
 
 #warmup run

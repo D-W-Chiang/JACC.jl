@@ -2,16 +2,6 @@ include("setup.jl")
 
 using BenchmarkTools
 
-function matvecmul(i, a1, a2, a3, x, y, SIZE)
-	if i == 1
-            y[i] = a2[i] * x[i] + a1[i] * x[i + 1]
-        elseif i == SIZE
-            y[i] = a3[i] * x[i - 1] + a2[i] * x[i]
-        elseif i > 1 && i < SIZE
-            y[i] = a3[i] * x[i - 1] + a2[i] * +x[i] + a1[i] * +x[i + 1]
-        end
-end
-
 a0 = JACC.ones(SIZE)
 a1 = JACC.ones(SIZE)
 a2 = JACC.ones(SIZE)

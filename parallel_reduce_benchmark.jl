@@ -2,8 +2,6 @@ include("setup.jl")
 
 using BenchmarkTools
 
-SIZE = 10
-
 function matvecmul(i, a1, a2, a3, x, y, SIZE)
         if i == 1
             y[i] = a2[i] * x[i] + a1[i] * x[i + 1]
