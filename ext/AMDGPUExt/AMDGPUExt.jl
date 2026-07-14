@@ -105,7 +105,7 @@ function _parallel_for(indexer::TI, f, (m, n), (M, N), x...) where {TI}
     kernel, shmem_size = _kernel_maxshmem(_parallel_for_amdgpu_MN, kargs)
     config = AMDGPU.launch_configuration(kernel; shmem = shmem_size)
     maxThreadsX = sqrt(config.groupsize)
-    y_thr = floor(Int, (n / m) * maxThreadsX)
+    y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, config.groupsize)
     x_thr = fld(config.groupsize, y_thr)
     threads = (x_thr, y_thr)
     blocks = (cld(m, x_thr), cld(n, y_thr))
@@ -118,7 +118,7 @@ function JACC.parallel_for(
     dev = AMDGPU.device()
     props = AMDGPU.HIP.properties(dev)
     maxBlocks = (x = props.maxGridSize[1], y = props.maxGridSize[2])
-    if M < N && maxBlocks.x > maxBlocks.y
+    if M < N && maxBlocks.x >= maxBlocks.y
         _parallel_for(BlockIndexerSwapped(), f, (N, M), (M, N), x...)
     else
         _parallel_for(BlockIndexerBasic(), f, (M, N), (M, N), x...)
@@ -137,7 +137,7 @@ function _parallel_for(indexer::TI, f, spec::LaunchSpec{AMDGPUBackend}, (m, n),
     if spec.threads == 0
         config = AMDGPU.launch_configuration(kernel; shmem = spec.shmem_size)
         maxThreadsX = sqrt(config.groupsize)
-        y_thr = floor(Int, (n / m) * maxThreadsX)
+        y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, config.groupsize)
         x_thr = fld(config.groupsize, y_thr)
         spec.threads = (x_thr, y_thr)
     end
@@ -158,7 +158,7 @@ function JACC.parallel_for(
     dev = AMDGPU.device()
     props = AMDGPU.HIP.properties(dev)
     maxBlocks = (x = props.maxGridSize[1], y = props.maxGridSize[2])
-    if M < N && maxBlocks.x > maxBlocks.y
+    if M < N && maxBlocks.x >= maxBlocks.y
         _parallel_for(BlockIndexerSwapped(), f, spec, (N, M), (M, N), x...)
     else
         _parallel_for(BlockIndexerBasic(), f, spec, (M, N), (M, N), x...)

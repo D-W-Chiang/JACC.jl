@@ -100,7 +100,7 @@ function _parallel_for(indexer::TI, f, (m, n), (M, N), x...) where {TI}
     kernel, shmem_size = _kernel_maxshmem(_parallel_for_cuda_MN, kargs)
     config = CUDA.launch_configuration(kernel.fun; shmem = shmem_size)
     maxThreadsX = sqrt(config.threads)
-    y_thr = floor(Int, (n / m) * maxThreadsX)
+    y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, config.threads)
     x_thr = fld(config.threads, y_thr)
     threads = (x_thr, y_thr)
     blocks = (cld(m, x_thr), cld(n, y_thr))
@@ -114,7 +114,7 @@ function JACC.parallel_for(f, ::CUDABackend, (M, N)::NTuple{2, Integer}, x...)
         x = attribute(dev, CUDA.DEVICE_ATTRIBUTE_MAX_GRID_DIM_X),
         y = attribute(dev, CUDA.DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y)
     )
-    if M < N && maxBlocks.x > maxBlocks.y
+    if M < N && maxBlocks.x >= maxBlocks.y
         _parallel_for(BlockIndexerSwapped(), f, (N, M), (M, N), x...)
     else
         _parallel_for(BlockIndexerBasic(), f, (M, N), (M, N), x...)
@@ -133,7 +133,7 @@ function _parallel_for(indexer::TI, f, spec::LaunchSpec{CUDABackend}, (m, n),
     if spec.threads == 0
         config = CUDA.launch_configuration(kernel.fun; shmem = spec.shmem_size)
         maxThreadsX = sqrt(config.threads)
-        y_thr = floor(Int, (n / m) * maxThreadsX)
+        y_thr = clamp(floor(Int, (n / m) * maxThreadsX), 1, config.threads)
         x_thr = fld(config.threads, y_thr)
         spec.threads = (x_thr, y_thr)
     end
@@ -156,7 +156,7 @@ function JACC.parallel_for(
         x = attribute(dev, CUDA.DEVICE_ATTRIBUTE_MAX_GRID_DIM_X),
         y = attribute(dev, CUDA.DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y)
     )
-    if M < N && maxBlocks.x > maxBlocks.y
+    if M < N && maxBlocks.x >= maxBlocks.y
         _parallel_for(BlockIndexerSwapped(), f, spec, (N, M), (M, N), x...)
     else
         _parallel_for(BlockIndexerBasic(), f, spec, (M, N), (M, N), x...)
