@@ -31,7 +31,8 @@ copyto!(r_aux, r)
 
 #warmup run
 JACC.Async.parallel_for(2, SIZE, axpy, beta, r_aux, p)
-JACC.Async.parallel_reduce(1, $SIZE, dot, r, r) 
+JACC.Async.parallel_reduce(1, SIZE, dot, r, r) 
+JACC.Async.synchronize()
 
 result = @benchmark begin
 #ten iterations

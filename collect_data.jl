@@ -4,12 +4,12 @@ jacc_async_data = Tuple{Int, Int}[]
 for size in 2_000_000:2_000_000:20_000_000
     	println("Collecting data for SIZE = $size...")
 
-	cmd_async = `julia -e "SIZE=$size; include(\"async_parallel_benchmark.jl\")"`
+	cmd_async = `julia -e "SIZE=$size; include(\"async_conjugate_gradient_benchmark.jl\")"`
 	async_str = readchomp(cmd_async)
 	
 	println("async time = ", async_str)
 
-	cmd_non_async = `julia -e "SIZE=$size; include(\"parallel_benchmark.jl\")"`
+	cmd_non_async = `julia -e "SIZE=$size; include(\"conjugate_gradient_benchmark.jl\")"`
 	non_async_str = readchomp(cmd_non_async)
 
 	println("time = ", non_async_str)

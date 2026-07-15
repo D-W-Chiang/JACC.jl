@@ -42,7 +42,7 @@ let
 
 @benchmarkable begin 
     while cond[1, 1] >= 1e-14
-        copyto!($r, $r_old)
+        copyto!($r_old, $r)
 
         JACC.Async.parallel_for(2, $SIZE, matvecmul, $a0, $a1, $a2, $p, $s1, $SIZE)
 
@@ -53,7 +53,7 @@ let
         alpha = JACC.to_host(alpha0)[] / JACC.to_host(alpha1)[]
         negative_alpha = alpha * -1.0
 
-        copyto!($s2, $s1)
+        copyto!($s1, $s2)
         JACC.Async.parallel_for(2, $SIZE, axpy, alpha, $x, $p)
         JACC.Async.parallel_for(1, $SIZE, axpy, negative_alpha, $r, $s2)
         JACC.Async.synchronize()
@@ -63,7 +63,7 @@ let
         JACC.Async.synchronize()
         beta = JACC.to_host(beta0)[] / JACC.to_host(beta1)[]
 
-        copyto!($r, $r_aux)
+        copyto!($r_aux, $r)
 
         JACC.Async.parallel_for(2, $SIZE, axpy, beta, $r_aux, $p)
         ccond = JACC.Async.parallel_reduce(1, $SIZE, dot, $r, $r)
@@ -72,11 +72,13 @@ let
 
         copyto!($p, $r_aux)
     end
-end seconds = 300 samples = 100 evals = 1 gcsample = true setup = (CUDA.device!(1); $x .= 0.0; CUDA.device!(0); $r .= 0.5; $CUDA.device!(1); $p .= 0.5; cond = 1.0)
+    println(cond)
+end seconds = 300 samples = 1 evals = 1 gcsample = true setup = (CUDA.device!(1); $x .= 0.0; CUDA.device!(0); $r .= 0.5; $CUDA.device!(1); $p .= 0.5; cond = 1.0)
 end
 
 results = run(suite)
 
+#=
 #store times as a single, comma-separated row 
 writedlm("times.csv", permutedims(results["cg_async"].times), ',')
 
@@ -95,3 +97,4 @@ open("metrics.txt", "w") do file
 
 	println(file, "variation: $(std(results["cg_async"].times)/1e9)")
 end
+=#

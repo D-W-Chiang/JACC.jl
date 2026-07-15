@@ -28,7 +28,8 @@ for i = 1:10
 	JACC.parallel_reduce($SIZE, dot, $r, $r)
 	JACC.parallel_reduce($SIZE, dot, $p, $s)
 end
-end samples = 1 evals = 1
+end evals = 1 samples = 1
+
+average_time = sum(result.times) / length(result.times)
 
 print(round(Int, result.times[1]/10))
-
