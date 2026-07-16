@@ -39,10 +39,11 @@ let
 	CUDA.device!(1)
         p = p * 0.5
         cond = 1.0
+	iterations = 0
 
 @benchmarkable begin 
     while cond[1, 1] >= 1e-14
-        println(cond)
+        iterations += 1
 	copyto!($r_old, $r)
 
         JACC.Async.parallel_for(2, $SIZE, matvecmul, $a0, $a1, $a2, $p, $s1, $SIZE)
@@ -73,7 +74,7 @@ let
 
         copyto!($p, $r_aux)
     end
-    println(cond)
+return iterations 
 end seconds = 300 samples = 1 evals = 1 gcsample = true setup = (CUDA.device!(1); $x .= 0.0; CUDA.device!(0); $r .= 0.5; $CUDA.device!(1); $p .= 0.5; cond = 1.0)
 end
 

@@ -33,8 +33,7 @@ p .*= 0.5
 cond = 1.0
 
 while cond[1, 1] >= 1e-14
-    global cond
-    print(cond)
+    global cond 
     copyto!(r_old, r)
 
     JACC.Async.parallel_for(2, SIZE, matvecmul, a0, a1, a2, p, s1, SIZE)
@@ -78,13 +77,15 @@ fill!(x, 0.0)
 fill!(r_old, 0.0)
 fill!(r_aux, 0.0)
 
-result = @benchmark(begin
+result = @benchmark begin
     cond = 1.0
+    iterations = 1	
 
     while cond >= 1e-14
-        copyto!($r_old, $r)
+        iterations += 1
+	copyto!($r_old, $r)
 
-        JACC.Async.parallel_for(2, $SIZE, $matvecmul, $a0, $a1, $a2, $p, $s1, $SIZE)
+        JACC.Async.parallel_for(2, $SIZE, matvecmul, $a0, $a1, $a2, $p, $s1, $SIZE)
 
         alpha1 = JACC.Async.parallel_reduce(2, $SIZE, dot, $p, $s1)
         alpha0 = JACC.Async.parallel_reduce(1, $SIZE, dot, $r, $r)
@@ -114,4 +115,8 @@ result = @benchmark(begin
 
         copyto!($p, $r_aux)
     end
-end setup=(CUDA.device!(0); fill!($r, 0.5); fill!($s2, 0.0); CUDA.device!(1); fill!($p, 0.5); fill!($s1, 0.0); fill!($x, 0.0); fill!($r_old, 0.0); fill!($r_aux, 0.0)), evals=1 samples=1 samples = 1, evals = 1)
+return iterations
+
+end evals=1 samples=1 setup=(CUDA.device!(0); fill!($r, 0.5); fill!($s2, 0.0); CUDA.device!(1); fill!($p, 0.5); fill!($s1, 0.0); fill!($x, 0.0); fill!($r_old, 0.0); fill!($r_aux, 0.0))
+
+println(result.times[1])
