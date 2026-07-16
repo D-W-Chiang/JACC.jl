@@ -1167,7 +1167,7 @@ if JACC.backend != "amdgpu" && JACC.backend != "metal"
         cond = 1.0
 
         while cond[1, 1] >= 1e-14
-            copyto!(r, r_old)
+            copyto!(r_old, r)
 
             JACC.Async.parallel_for(1, SIZE, matvecmul, a0, a1, a2, p, s1, SIZE)
 
@@ -1178,7 +1178,7 @@ if JACC.backend != "amdgpu" && JACC.backend != "metal"
             alpha = JACC.to_host(alpha0)[] / JACC.to_host(alpha1)[]
             negative_alpha = alpha * -1.0
 
-            copyto!(s2, s1)
+            copyto!(s1, s2)
             JACC.Async.parallel_for(1, SIZE, axpy, alpha, x, p)
             JACC.Async.parallel_for(2, SIZE, axpy, negative_alpha, r, s2)
             JACC.Async.synchronize()
@@ -1188,7 +1188,7 @@ if JACC.backend != "amdgpu" && JACC.backend != "metal"
             JACC.Async.synchronize()
             beta = JACC.to_host(beta0)[] / JACC.to_host(beta1)[]
 
-            copyto!(r, r_aux)
+            copyto!(r_aux, r)
 
             JACC.Async.parallel_for(1, SIZE, axpy, beta, r_aux, p)
             ccond = JACC.Async.parallel_reduce(2, SIZE, dot, r, r)

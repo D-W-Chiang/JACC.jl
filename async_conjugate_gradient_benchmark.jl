@@ -24,15 +24,17 @@ r_old = JACC.Async.zeros(2, SIZE)
 r_aux = JACC.Async.zeros(2, SIZE)
 
 CUDA.device!(0)
-r = r * 0.5
+r .*= 0.5
 CUDA.device!(1)
-a1 = a1 * 4
-p = p * 0.5
+a1 .*= 4
+p .*= 0.5
 
 #warmup run
 cond = 1.0
 
 while cond[1, 1] >= 1e-14
+    global cond
+    print(cond)
     copyto!(r_old, r)
 
     JACC.Async.parallel_for(2, SIZE, matvecmul, a0, a1, a2, p, s1, SIZE)
@@ -112,4 +114,4 @@ result = @benchmark(begin
 
         copyto!($p, $r_aux)
     end
-end, samples = 1, evals = 1)
+end setup=(CUDA.device!(0); fill!($r, 0.5); fill!($s2, 0.0); CUDA.device!(1); fill!($p, 0.5); fill!($s1, 0.0); fill!($x, 0.0); fill!($r_old, 0.0); fill!($r_aux, 0.0)), evals=1 samples=1 samples = 1, evals = 1)

@@ -7,7 +7,7 @@ using Statistics
 
 suite = BenchmarkGroup()
 
-SIZE = 200_000_000
+SIZE = 2_000_000
 
 function matvecmul(i, a1, a2, a3, x, y, SIZE)
         if i == 1
@@ -42,7 +42,8 @@ let
 
 @benchmarkable begin 
     while cond[1, 1] >= 1e-14
-        copyto!($r_old, $r)
+        println(cond)
+	copyto!($r_old, $r)
 
         JACC.Async.parallel_for(2, $SIZE, matvecmul, $a0, $a1, $a2, $p, $s1, $SIZE)
 
@@ -53,7 +54,7 @@ let
         alpha = JACC.to_host(alpha0)[] / JACC.to_host(alpha1)[]
         negative_alpha = alpha * -1.0
 
-        copyto!($s1, $s2)
+        copyto!($s2, $s1)
         JACC.Async.parallel_for(2, $SIZE, axpy, alpha, $x, $p)
         JACC.Async.parallel_for(1, $SIZE, axpy, negative_alpha, $r, $s2)
         JACC.Async.synchronize()
