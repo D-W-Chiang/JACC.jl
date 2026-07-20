@@ -17,7 +17,7 @@ r  = JACC.Async.ones(1, SIZE)
 p  = JACC.Async.ones(2, SIZE)
 s1 = JACC.Async.zeros(2, SIZE)
 r  = r * 0.5
-AMDGPU.device(devices[2])
+AMDGPU.device!(devices[2])
 p  = p * 0.5
 
 #warmup run
