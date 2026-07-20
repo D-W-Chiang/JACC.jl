@@ -12,7 +12,7 @@ function matvecmul(i, a1, a2, a3, x, y, SIZE)
         end
 end
 
-#devices = AMDGPU.devices()
+devices = AMDGPU.devices()
 
 a0 = JACC.Async.ones(2, SIZE)
 a1 = JACC.Async.ones(2, SIZE)
@@ -22,12 +22,10 @@ p  = JACC.Async.ones(2, SIZE)
 s1 = JACC.Async.ones(2, SIZE)
 s2 = JACC.Async.zeros(1, SIZE)
 x  = JACC.Async.zeros(2, SIZE)
-CUDA.device!(1)
-#AMDGPU.device!(devices[2])
+AMDGPU.device!(devices[2])
 a1 = a1 * 4
 p  = p * 0.5
-CUDA.device!(0)
-#AMDGPU.device!(devices[1])
+AMDGPU.device!(devices[1])
 r  = r * 0.5
 
 JACC.Async.parallel_for(2, SIZE, matvecmul, a0, a1, a2, p, s1, SIZE)

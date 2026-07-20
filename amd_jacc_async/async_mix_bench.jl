@@ -12,13 +12,15 @@ function matvecmul(i, a1, a2, a3, x, y, SIZE)
         end
 end
 
+devices = AMDGPU.devices()
+
 r  = JACC.Async.ones(1, SIZE)
 p  = JACC.Async.ones(2, SIZE)
 r_old = JACC.Async.zeros(2, SIZE)
 r_aux = JACC.Async.zeros(2, SIZE)
 
 r  = r * 0.5
-CUDA.device!(1)
+AMDGPU.device!(devices[2])
 p  = p * 0.5
 
 copyto!(r_old, r)
