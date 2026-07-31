@@ -4,12 +4,12 @@ jacc_async_data = Tuple{Float64, Float64}[]
 for size in 2_000_000:2_000_000:20_000_000
         println("Collecting data for SIZE = $size...")
 
-        cmd_non_async = `julia -e "SIZE=$size; include(\"jacc/parallel_mix_bench.jl\")"`
+        cmd_non_async = `julia -e "SIZE=$size; include(\"jacc/mix_bench.jl\")"`
         non_async_str = readchomp(cmd_non_async)
 
         println("time = ", non_async_str)
 
-        cmd_async = `julia -e "SIZE=$size; include(\"amd_jacc_async/async_parallel_mix_bench.jl\")"`
+        cmd_async = `julia -e "SIZE=$size; include(\"amd_jacc_async/async_mix_bench.jl\")"`
         async_str = readchomp(cmd_async)
 
         println("async time = ", async_str)

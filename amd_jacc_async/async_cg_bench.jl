@@ -12,7 +12,7 @@ function matvecmul(i, a1, a2, a3, x, y, SIZE)
     end
 end
 
-devices = AMDGPU.devices!()
+devices = AMDGPU.devices()
 
 a0 = JACC.Async.ones(2, SIZE)
 a1 = JACC.Async.ones(2, SIZE)
@@ -33,9 +33,11 @@ p .*= 0.5
 
 result = @benchmark begin
     cond = 1.0
+    i = 0
 
     while cond >= 1e-14
-       copyto!($r_old, $r)
+       	i += 1
+	copyto!($r_old, $r)
 
         JACC.Async.parallel_for(2, $SIZE, matvecmul, $a0, $a1, $a2, $p, $s1, $SIZE)
 
@@ -67,6 +69,9 @@ result = @benchmark begin
 
         copyto!($p, $r_aux)
     end
+
+    println(i)
+
 end evals=1 samples=10 gcsample=true setup=(AMDGPU.device!(devices[1]); $r .= 0.5; $s2 .= 0.0; AMDGPU.device!(devices[2]); $p .= 0.5; $s1 .= 0.0; $x .= 0.0; $r_old .= 0.0; $r_aux .= 0.0)
 
 println(mean(result).time)
